@@ -44,5 +44,23 @@ class VacancySearchSchema(BaseModel):
     page: int = Field(default=0, ge=0, description="Номер страницы (с 0)")
     per_page: int = Field(default=20, ge=1, le=100, description="Кол-во вакансий на странице")
 
+
+class VacancyShortSchema(BaseModel):
+    id: str
+    name: str
+    employer_name: Optional[str] = None
+    area_name: Optional[str] = None
+    salary_from: Optional[int] = None
+    salary_to: Optional[int] = None
+    salary_currency: Optional[str] = None
+    published_at: Optional[str] = None
+    alternate_url: str
+    snippet_requirement: Optional[str] = None
+    snippet_responsibility: Optional[str] = None
+    
 class VacancySearchResponseSchema(BaseModel):
-    ...
+    found: int
+    pages: int
+    page: int
+    per_page: int
+    items: list[VacancyShortSchema]

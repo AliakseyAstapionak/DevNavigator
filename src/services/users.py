@@ -26,3 +26,5 @@ class UserService:
         query = select(UserBase).where(UserBase.id == id)
         result = await db.execute(query)
         return result.scalars().first()
+
+        

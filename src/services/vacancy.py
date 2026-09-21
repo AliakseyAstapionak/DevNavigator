@@ -1,68 +1,73 @@
-from fastapi import HTTPException, status
-from schemas import VacancySearchSchema, VacancySearchResponseSchema, VacancyShortSchema, VacancySearchResponseSchema
-from sqlalchemy.ext.asyncio import AsyncSession
 import httpx
+from fastapi import HTTPException, status
+from schemas.vacancy import VacancySearchSchema, VacancySearchResponseSchema, VacancyShortSchema
 
-
-
-HH_API_URL = 'https://api.hh.ru/vacancies'
-PROXIES = "http://185.162.229.130:80"
-# hh.ru просит указывать User-Agent с названием приложения и контактом —
-# без этого могут прилетать 403 при повышенной нагрузке
+BASE_URL = "https://opendata.trudvsem.ru/api/v1/vacancies"
 
 HEADERS = {
-    "User-Agent": "DevNavigatorApp/1.0 (contact@devnavigator.ru)",
-    "Accept": "application/json"
+    "User-Agent": "DevNavigator/1.0 (astapnok131@gmail.com)"
 }
 
+# TODO подумать над тем как удобно вводить регион
 class VacancyService:
 
     @staticmethod
-    async def _built_params(search: VacancySearchSchema) -> dict:
-        params = search.model_dump(exclude_none=True)
-        # only_with_salary=False отправлять не нужно, hh.ru по умолчанию его не ждёт
-        if not params.get("only_with_salary"):
-            params.pop("only_with_salary", None)
+    def _build_params(search: VacancySearchSchema) -> dict:
+        """region_code, если он задан, идёт не в query-параметры (?region_code=...), а прямо в URL — в путь /vacancies/region/{region_code}"""
+        params = search.model_dump(mode="json", exclude_none=True, exclude={"region_code"})
         return params
 
     @staticmethod
-    async def search_vacancies(search: VacancySearchSchema, db: AsyncSession) -> VacancySearchResponseSchema:
-        params = await VacancyService._built_params(search)
+    def _build_url(search: VacancySearchSchema) -> str:
+        # если указан регион — используется отдельный путь /vacancies/region/{code}
+        if search.region_code:
+            return f"{BASE_URL}/region/{search.region_code}"
+        return BASE_URL
 
-        async with httpx.AsyncClient(timeout=10.0, headers=HEADERS) as client:
+    @staticmethod
+    async def search_vacancies(search: VacancySearchSchema) -> VacancySearchResponseSchema:
+        params = VacancyService._build_params(search)
+        url = VacancyService._build_url(search)
+
+        async with httpx.AsyncClient(timeout=10.0) as client:
             try:
-                response = await client.get(HH_API_URL, params=params)
-                print("hh.ru статус:", response.status_code)
-                print("hh.ru тело:", response.text[:500])
+                response = await client.get(url, params=params, headers=HEADERS)
                 response.raise_for_status()
             except httpx.TimeoutException:
-                raise HTTPException(status_code=status.HTTP_504_GATEWAY_TIMEOUT, detail="hh.ru не ответил вовремя, попробуйте позже")
+                raise HTTPException(
+                    status_code=status.HTTP_504_GATEWAY_TIMEOUT,
+                    detail="trudvsem.ru не ответил вовремя, попробуйте позже"
+                )
             except httpx.HTTPStatusError as e:
-               raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=f"Ошибка при обращении к hh.ru: {e.response.status_code}")
-            
+                raise HTTPException(
+                    status_code=status.HTTP_502_BAD_GATEWAY,
+                    detail=f"Ошибка при обращении к trudvsem.ru: {e.response.status_code}"
+                )
+
         data = response.json()
 
-        items = [
-            VacancyShortSchema(
-                id=item["id"],
-                name=item["name"],
-                employer_name=item.get("employer", {}).get("name"),
-                area_name=item.get("area", {}).get("name"),
-                salary_from=item.get("salary", {}).get("from") if item.get("salary") else None,
-                salary_to=item.get("salary", {}).get("to") if item.get("salary") else None,
-                salary_currency=item.get("salary", {}).get("currency") if item.get("salary") else None,
-                published_at=item.get("published_at"),
-                alternate_url=item["alternate_url"],
-                snippet_requirement=item.get("snippet", {}).get("requirement"),
-                snippet_responsibility=item.get("snippet", {}).get("responsibility"),
+        meta = data.get("meta", {})
+        raw_vacancies = data.get("results", {}).get("vacancies", [])
+
+        items = []
+        for entry in raw_vacancies:
+            v = entry.get("vacancy", entry)  # на случай, если структура окажется плоской
+            items.append(
+                VacancyShortSchema(
+                    id=str(v.get("id")),
+                    name=v.get("job-name") or v.get("name", ""),
+                    company_name=v.get("company", {}).get("name") if isinstance(v.get("company"), dict) else None,
+                    region_name=v.get("region", {}).get("name") if isinstance(v.get("region"), dict) else None,
+                    salary_min=v.get("salary_min"),
+                    salary_max=v.get("salary_max"),
+                    created_at=v.get("creation-date"),
+                    url=v.get("vac_url"),
+                )
             )
-            for item in data.get("items", [])
-        ]
 
         return VacancySearchResponseSchema(
-            found=data.get("found", 0),
-            pages=data.get("pages", 0),
-            page=data.get("page", 0),
-            per_page=data.get("per_page", 0),
+            total=meta.get("total", 0),
+            limit=meta.get("limit", search.limit),
+            offset=meta.get("offset", search.offset),
             items=items,
         )

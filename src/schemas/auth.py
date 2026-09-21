@@ -43,3 +43,7 @@ class StatusResponseSchema(BaseModel):
     success: bool
     message: str
 
+class UserPayload(BaseModel):
+    id: int
+    username: str
+    model_config = ConfigDict(from_attributes=True)

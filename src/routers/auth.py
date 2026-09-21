@@ -23,7 +23,7 @@ async def registration(user: RegistrateUserSchema, db: AsyncSession = Depends(ge
 async def login(response: Response, user: LoginUserSchema, db: AsyncSession = Depends(get_db)):
     existing_user = await UserService.get_user_by_name(username=user.username, db=db)
     if not existing_user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"К сожалению пользоваетль '{user.username}' не найдет")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"К сожалению пользоваетль '{user.username}' не найден")
     if not await verify_password(user.password, existing_user.hashed_password):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="К сожалению вы ввели не правильный пароль, попробуйте еще раз") 
     payload = {

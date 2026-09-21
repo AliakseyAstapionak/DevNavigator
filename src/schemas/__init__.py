@@ -1,2 +1,4 @@
-from .auth import RegistrateUserSchema, LoginUserSchema, UserActionResponseSchema, StatusResponseSchema
-from .vacancy import VacancySearchSchema, VacancySearchResponseSchema, VacancyShortSchema, VacancySearchResponseSchema
+from .auth import RegistrateUserSchema, LoginUserSchema, UserActionResponseSchema, StatusResponseSchema, UserPayload
+# from .hhvacancy import HHVacancySearchSchema, HHVacancySearchResponseSchema, HHVacancyShortSchema, HHVacancySearchResponseSchema
+from .vacancy import VacancySearchSchema, VacancyShortSchema, VacancySearchResponseSchema, VacancySearchWithUserResponseSchema
+from .request import RequestResponseSchema

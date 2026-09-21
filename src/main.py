@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from routers import auth_router, vacancy_router
+from routers import auth_router, vacancy_router, get_stack_by_profession_router
 from database import engine, Base
 import uvicorn
 
@@ -10,13 +10,14 @@ async def lifespan(app: FastAPI):
         await conn.run_sync(Base.metadata.create_all)
     print('Приложение запущено!')
     yield
-    engine.dispose()
+    await engine.dispose()
     print('Приложение остановлено!')
 
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(auth_router)
 app.include_router(vacancy_router)
+app.include_router(get_stack_by_profession_router)
 
 
 if __name__ == '__main__':

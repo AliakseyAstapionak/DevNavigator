@@ -9,7 +9,7 @@ from database import get_db
 class RequestService:
 
     @staticmethod
-    async def create_request(user_id: int, request: VacancySearchSchema , response: VacancySearchResponseSchema , db: AsyncSession) -> RequestBase:
+    async def create_request(user_id: int, request: Any , response: Any , db: AsyncSession) -> RequestBase:
         request_data = request.model_dump(mode="json")
         response_data = response.model_dump(mode='json')
 

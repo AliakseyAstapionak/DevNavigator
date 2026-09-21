@@ -2,3 +2,4 @@ from .auth import RegistrateUserSchema, LoginUserSchema, UserActionResponseSchem
 # from .hhvacancy import HHVacancySearchSchema, HHVacancySearchResponseSchema, HHVacancyShortSchema, HHVacancySearchResponseSchema
 from .vacancy import VacancySearchSchema, VacancyShortSchema, VacancySearchResponseSchema, VacancySearchWithUserResponseSchema
 from .request import RequestResponseSchema
+from .ai.get_stack_by_profession import GetStackByProfessionRequestSchema, GetStackByProfessionResponseSchema 

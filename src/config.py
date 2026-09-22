@@ -12,3 +12,4 @@ if not JWT_SECRET_KEY:
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 if not GEMINI_API_KEY:
     raise Exception('Не указан GEMINI_API_KEY')
+

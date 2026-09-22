@@ -9,8 +9,15 @@ class AIService:
 
     @staticmethod
     async def call_gemini(system_prompt: str, user_input: str) -> dict:
+        if not GEMINI_API_KEY:
+            raise HTTPException(
+                status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="GEMINI_API_KEY не установлен в конфигурации"
+            )
+
         headers = {
             "Authorization": f"Bearer {GEMINI_API_KEY}",
+            "Content-Type": "application/json"
         }
         
         body = {
@@ -21,21 +28,19 @@ class AIService:
             ],
             "response_format": {"type": "json_object"},
         }
-        
+
         async with httpx.AsyncClient(timeout=30.0) as client:
             try:
-                # Передаем ключ и в query-параметрах, и в заголовке
                 response = await client.post(
                     GEMINI_URL, 
-                    params={"key": GEMINI_API_KEY}, 
                     headers=headers, 
                     json=body
                 )
                 response.raise_for_status()
                 
                 res_data = response.json()
+                # print(res_data)
                 content = res_data["choices"][0]["message"]["content"]
-                
                 return json.loads(content)
                 
             except httpx.TimeoutException:

@@ -1,7 +1,6 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends
 from schemas import (
     GetStackByProfessionRequestSchema,
-    GetStackByProfessionResponseSchema,
     UserPayload,
 )
 from services import GetStackByProfessionService, RequestService

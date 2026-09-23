@@ -21,7 +21,7 @@ class RequestBase(Base):
         index=True
     )
     request: Mapped[dict] = mapped_column(JSONB, nullable=False)
-    response: Mapped[str | None] = mapped_column(JSONB, nullable=True)
+    response: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     user: Mapped["UserBase"] = relationship(back_populates="requests")

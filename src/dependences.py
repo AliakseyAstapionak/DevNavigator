@@ -26,7 +26,4 @@ async def get_current_user(request: Request) -> Optional[UserPayload]:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Ошибка валидации токена")
     
     user = UserPayload(id=user_id, username=user_name )
-    if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Пользователь не найден")
-        
     return user

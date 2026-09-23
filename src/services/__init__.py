@@ -3,3 +3,4 @@ from .users import UserService
 from .vacancy import VacancyService
 from .request import RequestService
 from .ai.get_stack_by_profession import GetStackByProfessionService
+from .ai.write_questions_by_stack import WriteQuestionsByStackService

@@ -3,3 +3,4 @@ from .auth import RegistrateUserSchema, LoginUserSchema, UserActionResponseSchem
 from .vacancy import VacancySearchSchema, VacancyShortSchema, VacancySearchResponseSchema, VacancySearchWithUserResponseSchema
 from .request import RequestResponseSchema
 from .ai.get_stack_by_profession import GetStackByProfessionRequestSchema, GetStackByProfessionResponseSchema 
+from .ai.write_questions_by_stack import GetQuestionsByStackRequestSchema, GetQuestionsByStackResponseSchema

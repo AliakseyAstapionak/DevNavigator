@@ -31,11 +31,7 @@ class AIService:
 
         async with httpx.AsyncClient(timeout=30.0) as client:
             try:
-                response = await client.post(
-                    GEMINI_URL, 
-                    headers=headers, 
-                    json=body
-                )
+                response = await client.post(GEMINI_URL, headers=headers, json=body)
                 response.raise_for_status()
                 
                 res_data = response.json()

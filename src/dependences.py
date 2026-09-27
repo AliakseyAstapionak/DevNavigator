@@ -1,13 +1,12 @@
-from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException, Depends, Request, status
 from config import JWT_SECRET_KEY
 from schemas import UserPayload
-from typing import Optional
+
 import jwt
 
 
 
-async def get_current_user(request: Request) -> Optional[UserPayload]:
+async def get_current_user(request: Request) -> UserPayload:
     token = request.cookies.get("access_token")
     if not token:
         raise HTTPException(

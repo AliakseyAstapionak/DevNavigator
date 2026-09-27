@@ -5,12 +5,11 @@ from pathlib import Path
 from routers import auth_router, vacancy_router, get_stack_by_profession_router, write_questions_by_stack_router
 from database import engine, Base
 import uvicorn
-from services.vacancy import close_client
-
-STATIC_DIR = Path(__file__).resolve().parent / "static"
+from services.utils import close_client
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+
     async with engine.connect() as conn:
         await conn.run_sync(Base.metadata.create_all)
     print('Приложение запущено!')
@@ -26,7 +25,6 @@ app.include_router(vacancy_router)
 app.include_router(get_stack_by_profession_router)
 app.include_router(write_questions_by_stack_router)
 
-app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
 
 
 if __name__ == '__main__':

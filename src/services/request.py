@@ -1,7 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from schemas import VacancySearchSchema, VacancySearchResponseSchema
 from typing import Any
-from fastapi import Depends
 from models import RequestBase
 from database import get_db
 

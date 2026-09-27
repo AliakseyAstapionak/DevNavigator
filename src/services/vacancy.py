@@ -1,7 +1,7 @@
-import os
 import httpx
 from fastapi import HTTPException, status
 from schemas.vacancy import VacancySearchSchema, VacancySearchResponseSchema, VacancyShortSchema
+from services.utils import get_client
 
 BASE_URL ="https://opendata.trudvsem.ru/api/v1/vacancies"
 
@@ -10,27 +10,6 @@ BASE_URL ="https://opendata.trudvsem.ru/api/v1/vacancies"
 HEADERS = {
     "User-Agent": "DevNavigator/1.0 (astapnok131@gmail.com)"
 }
-
-_client: httpx.AsyncClient | None = None
-
-
-def get_client() -> httpx.AsyncClient:
-    global _client
-    if _client is None:
-        _client = httpx.AsyncClient(
-            timeout=10.0,
-            headers=HEADERS,
-            limits=httpx.Limits(max_connections=200, max_keepalive_connections=50),
-        )
-    return _client
-
-
-async def close_client() -> None:
-    global _client
-    if _client is not None:
-        await _client.aclose()
-        _client = None
-
 
 # TODO подумать над тем как удобно вводить регион
 class VacancyService:
@@ -53,9 +32,9 @@ class VacancyService:
         params = VacancyService._build_params(search)
         url = VacancyService._build_url(search)
 
-        client = get_client()
+        client = await get_client(name='search_vacancies')
         try:
-            response = await client.get(url, params=params)
+            response = await client.get(url, params=params, headers=HEADERS)
             response.raise_for_status()
         except httpx.TimeoutException:
             raise HTTPException(

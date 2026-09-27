@@ -13,6 +13,6 @@ router = APIRouter()
 async def vacancy_search(search: VacancySearchSchema, user: UserPayload = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     result = await VacancyService.search_vacancies(search=search)
     user_id = user.id
-    response = await RequestService.create_request(user_id=user_id, request=search, response=result, db=db)
+    db_request = await RequestService.create_request(user_id=user_id, request=search, response=result, db=db)
 
-    return {'user': user, 'results': response}
+    return {'user': user, 'results': db_request}

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DevNavigator — карьерный навигатор для разработчиков</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef2f7;--surface:#fff;--ink:#121a2b;--muted:#5d6880;--line:#d9e0ec;--accent:#2b50f0;--accent-ink:#fff;--soft:#e4eaff;--ok:#117a4d;--mid:#a86b00;--hard:#b3261e;--r:14px;
+--font:"Onest",system-ui,-apple-system,"Segoe UI",sans-serif;--display:"Unbounded","Onest",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0d1322;--surface:#151d31;--ink:#e9eefc;--muted:#93a0bb;--line:#26314c;--accent:#7b93ff;--accent-ink:#0d1322;--soft:#1e2a52;--ok:#4cd38f;--mid:#f2b134;--hard:#ff8a80}}
+:root[data-theme=dark]{--bg:#0d1322;--surface:#151d31;--ink:#e9eefc;--muted:#93a0bb;--line:#26314c;--accent:#7b93ff;--accent-ink:#0d1322;--soft:#1e2a52;--ok:#4cd38f;--mid:#f2b134;--hard:#ff8a80}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{font:16px/1.55 var(--font);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+.app{display:grid;grid-template-columns:260px 1fr;min-height:100%}
+aside{background:var(--ink);color:#e9eefc;padding:28px 20px;display:flex;flex-direction:column;gap:28px;position:sticky;top:0;height:100vh}
+.brand{font:600 18px var(--display);display:flex;align-items:center;gap:10px}
+.brand svg{flex:none}
+nav{display:flex;flex-direction:column;gap:4px}
+nav button{background:none;border:0;text-align:left;padding:11px 14px;border-radius:10px;cursor:pointer;color:#a9b5d3;display:flex;gap:10px;align-items:center}
+nav button:hover{background:rgba(255,255,255,.07);color:#fff}
+nav button[aria-current=page]{background:var(--accent);color:#fff;font-weight:600}
+.me{margin-top:auto;font-size:14px;color:#a9b5d3;display:flex;flex-direction:column;gap:10px}
+.me b{color:#fff;font-weight:600}
+.me .row{display:flex;gap:8px}
+.ghost{background:none;border:1px solid rgba(255,255,255,.25);color:#e9eefc;border-radius:10px;padding:8px 12px;cursor:pointer}
+.ghost:hover{background:rgba(255,255,255,.1)}
+main{padding:48px clamp(20px,5vw,64px);max-width:1040px;width:100%}
+h1{font:600 clamp(26px,3.4vw,38px)/1.15 var(--display);margin:0 0 10px;letter-spacing:-.02em}
+.lead{color:var(--muted);max-width:60ch;margin:0 0 32px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+form.f{display:grid;gap:14px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+label{display:grid;gap:6px;font-size:14px;font-weight:500}
+label small{color:var(--muted);font-weight:400}
+input,select{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 13px;width:100%}
+input:focus{border-color:var(--accent)}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;padding:12px 20px;font-weight:600;cursor:pointer;justify-self:start;display:inline-flex;gap:8px;align-items:center}
+.btn:hover{filter:brightness(1.08)}.btn:disabled{opacity:.6;cursor:wait}
+.spin{width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:s .7s linear infinite}
+@keyframes s{to{rotate:1turn}}
+.err{background:color-mix(in srgb,var(--hard) 12%,transparent);color:var(--hard);border-radius:10px;padding:11px 14px;font-size:14px;margin-top:14px}
+.out{margin-top:28px;display:grid;gap:12px}
+.meta{color:var(--muted);font-size:14px}
+.vac{display:grid;grid-template-columns:1fr auto;gap:6px 16px;align-items:start}
+.vac h3{margin:0;font-size:17px;font-weight:600}
+.vac .co{color:var(--muted);font-size:14px}
+.sal{font:600 15px var(--display);white-space:nowrap}
+.vac a{color:var(--accent);font-weight:600;font-size:14px;text-decoration:none}
+.vac a:hover{text-decoration:underline}
+.tag{display:inline-block;background:var(--soft);color:var(--accent);border-radius:99px;padding:3px 11px;font-size:13px;font-weight:500}
+.diff{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14px}
+.diff i{display:flex;gap:3px}.diff i s{width:18px;height:6px;border-radius:3px;background:var(--line)}
+.diff[data-l="1"]{color:var(--ok)}.diff[data-l="2"]{color:var(--mid)}.diff[data-l="3"]{color:var(--hard)}
+.diff[data-l="1"] s:nth-child(-n+1),.diff[data-l="2"] s:nth-child(-n+2),.diff[data-l="3"] s{background:currentColor}
+.head{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:center;justify-content:space-between}
+.head h2{font:600 22px var(--display);margin:0}
+.route{list-style:none;margin:0;padding:0;position:relative;display:grid;gap:10px}
+.route:before{content:"";position:absolute;left:17px;top:18px;bottom:18px;width:2px;background:var(--line)}
+.route li{position:relative;padding-left:52px;min-height:36px;display:flex;align-items:center;font-weight:500}
+.route li span{position:absolute;left:0;width:36px;height:36px;border-radius:50%;background:var(--surface);border:2px solid var(--accent);display:grid;place-items:center;font:600 12px var(--display);color:var(--accent)}
+.adv{margin:0;padding-left:20px;display:grid;gap:10px}
+.q{display:grid;grid-template-columns:auto 1fr;gap:14px}
+.q b{font:600 14px var(--display);color:var(--accent);min-width:26px}
+h4{margin:0 0 14px;font-size:15px}
+.hist{font-size:14px}
+/* auth */
+.auth{min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr}
+.hero{background:var(--ink);color:#fff;padding:clamp(28px,6vw,72px);display:flex;flex-direction:column;justify-content:space-between;gap:40px}
+.hero h1{font-size:clamp(30px,4.4vw,52px);max-width:14ch}
+.hero p{color:#a9b5d3;max-width:44ch;margin:0}
+.hero ul{list-style:none;padding:0;margin:0;display:grid;gap:12px;color:#d3dbf1}
+.hero li{display:flex;gap:10px}.hero li:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent);margin-top:9px;flex:none;box-shadow:0 0 0 4px rgba(123,147,255,.25)}
+.card{padding:clamp(24px,5vw,72px);display:flex;flex-direction:column;justify-content:center;max-width:520px}
+.tabs{display:flex;gap:4px;background:var(--line);padding:4px;border-radius:12px;margin-bottom:22px;width:fit-content}
+.tabs button{border:0;background:none;padding:8px 18px;border-radius:9px;cursor:pointer;font-weight:500;color:var(--muted)}
+.tabs button[aria-selected=true]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.toast{position:fixed;bottom:24px;left:50%;translate:-50% 0;background:var(--ink);color:#fff;padding:12px 20px;border-radius:12px;font-size:14px;z-index:9}
+@media (max-width:860px){
+.app{grid-template-columns:1fr}
+aside{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;padding:14px 16px;gap:12px}
+nav{flex-direction:row;order:3;width:100%;overflow-x:auto}nav button{white-space:nowrap}
+.me{margin:0 0 0 auto;flex-direction:row;align-items:center}
+.auth{grid-template-columns:1fr}.hero{gap:24px}.card{max-width:none}}
+@media (prefers-reduced-motion:reduce){.spin{animation-duration:2s}}
+</style>
+</head>
+<body>
+
+<!-- ===== Вход / регистрация ===== -->
+<section class="auth" id="authView" hidden>
+  <div class="hero">
+    <div class="brand"><svg width="30" height="30" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" stroke="#7b93ff" stroke-width="2"/><path d="M21.5 10.5 18 18l-7.5 3.5L14 14z" fill="#7b93ff"/></svg>DevNavigator</div>
+    <div>
+      <h1>Найдите свой путь в IT</h1>
+      <p style="margin-top:16px">Узнайте, что учить для нужной профессии, подготовьтесь к собеседованию и сразу ищите подходящие вакансии.</p>
+    </div>
+    <ul>
+      <li>Стек технологий и план обучения под вашу роль</li>
+      <li>Вопросы для собеседования по вашему стеку</li>
+      <li>Актуальные вакансии с портала «Работа России»</li>
+    </ul>
+  </div>
+  <div class="card">
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tLogin" aria-selected="true">Вход</button>
+      <button role="tab" id="tReg" aria-selected="false">Регистрация</button>
+    </div>
+    <form class="f" id="authForm" novalidate>
+      <label>Имя пользователя<input id="u" autocomplete="username" required minlength="3" maxlength="50"><small id="uHint" hidden>Буквы, цифры и _, от 3 до 50 символов</small></label>
+      <label>Пароль<input id="p" type="password" autocomplete="current-password" required maxlength="20"><small id="pHint" hidden>6–20 символов, минимум одна буква и один спецсимвол (!@#$%^&*)</small></label>
+      <button class="btn" id="authBtn">Войти</button>
+    </form>
+    <div class="err" id="authErr" role="alert" hidden></div>
+  </div>
+</section>
+
+<!-- ===== Приложение ===== -->
+<div class="app" id="appView" hidden>
+  <aside>
+    <div class="brand"><svg width="26" height="26" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" stroke="#7b93ff" stroke-width="2"/><path d="M21.5 10.5 18 18l-7.5 3.5L14 14z" fill="#7b93ff"/></svg>DevNavigator</div>
+    <nav id="nav">
+      <button data-v="stack" aria-current="page">Что учить</button>
+      <button data-v="quest">Вопросы для собеседования</button>
+      <button data-v="vac">Вакансии</button>
+    </nav>
+    <div class="me"><span>Вы вошли как <b id="meName"></b></span>
+      <div class="row"><button class="ghost" id="theme" aria-label="Сменить тему">Тема</button><button class="ghost" id="logout">Выйти</button></div>
+    </div>
+  </aside>
+  <main>
+    <section id="v-stack">
+      <h1>Что учить, чтобы стать разработчиком</h1>
+      <p class="lead">Назовите профессию или стек — получите список технологий от базовых к продвинутым, советы по обучению и оценку сроков.</p>
+      <div class="panel"><form class="f" data-form="stack">
+        <label>Профессия или стек<input name="profession" required minlength="2" placeholder="Python-разработчик на FastAPI"></label>
+        <button class="btn">Составить план</button></form></div>
+      <div class="out" id="o-stack"></div>
+    </section>
+    <section id="v-quest" hidden>
+      <h1>Подготовка к собеседованию</h1>
+      <p class="lead">Укажите профессию и технологии — получите вопросы, которые проверяют понимание, а не заучивание.</p>
+      <div class="panel"><form class="f" data-form="quest">
+        <label>Профессия и стек<input name="profession_with_stack" required minlength="5" placeholder="Python-разработчик: FastAPI, Pydantic, PostgreSQL"></label>
+        <button class="btn">Подготовить вопросы</button></form></div>
+      <div class="out" id="o-quest"></div>
+    </section>
+    <section id="v-vac" hidden>
+      <h1>Поиск вакансий</h1>
+      <p class="lead">Актуальные предложения с портала «Работа России». Регион можно не указывать — тогда поиск идёт по всей стране.</p>
+      <div class="panel"><form class="f" data-form="vac">
+        <label>Должность или стек<input name="text" required minlength="2" placeholder="Python разработчик"></label>
+        <div class="grid">
+          <label>Регион<select name="region_code"><option value="">Вся Россия</option><option value="7700000000000">Москва</option><option value="7800000000000">Санкт-Петербург</option><option value="5400000000000">Новосибирская область</option><option value="1600000000000">Татарстан</option><option value="2300000000000">Краснодарский край</option><option value="6600000000000">Свердловская область</option></select></label>
+          <label>Зарплата от, ₽<input name="salary_min" type="number" min="0" step="1000" placeholder="100000"></label>
+          <label>На странице<select name="limit"><option>10</option><option selected>20</option><option>50</option><option>100</option></select></label>
+        </div>
+        <button class="btn">Найти вакансии</button></form></div>
+      <div class="out" id="o-vac"></div>
+    </section>
+  </main>
+</div>
+
+<script>
+// ─── Настройки API: поправьте пути, если ваши роутеры называются иначе ───
+const API = {
+  register: "/registration",
+  login: "/login",
+  logout: "/logout",
+  vacancies: "/vacancy_search",
+  stack: "/ai/profession_advice",
+  questions: "/ai/interview_advice",
+};
+
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const LEVELS = { "низкая": 1, "средняя": 2, "высокая": 3 };
+
+async function api(url, body) {
+  let res;
+  try {
+    res = await fetch(url, { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body ?? {}) });
+  } catch { throw new Error("Нет связи с сервером. Проверьте подключение и повторите."); }
+  const data = await res.json().catch(() => ({}));
+  if (res.status === 401) { showAuth(); throw new Error(data.detail || "Войдите, чтобы продолжить"); }
+  if (!res.ok) {
+    const d = data.detail;
+    throw new Error(Array.isArray(d) ? d.map(e => e.msg.replace(/^Value error, /, "")).join(". ") : d || `Ошибка ${res.status}`);
+  }
+  return data;
+}
+
+function toast(t) { const e = document.createElement("div"); e.className = "toast"; e.textContent = t; document.body.append(e); setTimeout(() => e.remove(), 2600); }
+
+// ─── Авторизация ───
+let mode = "login";
+function setMode(m) {
+  mode = m;
+  $("#tLogin").setAttribute("aria-selected", m === "login");
+  $("#tReg").setAttribute("aria-selected", m === "reg");
+  $("#authBtn").textContent = m === "login" ? "Войти" : "Создать аккаунт";
+  $("#uHint").hidden = $("#pHint").hidden = m === "login";
+  $("#p").autocomplete = m === "login" ? "current-password" : "new-password";
+  $("#authErr").hidden = true;
+}
+$("#tLogin").onclick = () => setMode("login");
+$("#tReg").onclick = () => setMode("reg");
+
+function showAuth() { $("#appView").hidden = true; $("#authView").hidden = false; }
+function showApp(name) { localStorage.setItem("dn_user", name); $("#meName").textContent = name; $("#authView").hidden = true; $("#appView").hidden = false; }
+
+$("#authForm").onsubmit = async e => {
+  e.preventDefault();
+  const username = $("#u").value.trim(), password = $("#p").value, btn = $("#authBtn"), box = $("#authErr");
+  box.hidden = true; btn.disabled = true;
+  try {
+    if (mode === "reg") { await api(API.register, { username, password }); toast("Аккаунт создан"); }
+    const r = await api(API.login, { username, password });
+    showApp(r.user.username);
+    $("#authForm").reset();
+  } catch (err) { box.textContent = err.message; box.hidden = false; }
+  btn.disabled = false;
+};
+
+$("#logout").onclick = async () => { try { await api(API.logout); } catch {} localStorage.removeItem("dn_user"); showAuth(); setMode("login"); };
+
+// ─── Навигация и тема ───
+$("#nav").onclick = e => {
+  const b = e.target.closest("button"); if (!b) return;
+  document.querySelectorAll("#nav button").forEach(x => x.removeAttribute("aria-current"));
+  b.setAttribute("aria-current", "page");
+  ["stack", "quest", "vac"].forEach(v => $("#v-" + v).hidden = v !== b.dataset.v);
+};
+$("#theme").onclick = () => {
+  const dark = matchMedia("(prefers-color-scheme:dark)").matches;
+  const cur = document.documentElement.dataset.theme || (dark ? "dark" : "light");
+  const next = cur === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = next; localStorage.setItem("dn_theme", next);
+};
+if (localStorage.getItem("dn_theme")) document.documentElement.dataset.theme = localStorage.getItem("dn_theme");
+
+// ─── Рендер результатов ───
+const diff = d => { const l = LEVELS[d] || 2; return `<span class="diff" data-l="${l}"><i><s></s><s></s><s></s></i>Сложность: ${esc(d)}</span>`; };
+const months = n => { const m = n % 10, c = n % 100; return `${n} ${c > 10 && c < 15 ? "месяцев" : m === 1 ? "месяц" : m > 1 && m < 5 ? "месяца" : "месяцев"}`; };
+
+const render = {
+  stack: d => `
+    <div class="panel"><div class="head"><h2>${esc(d.role)}</h2><div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center">${diff(d.difficulty)}<span class="tag">≈ ${months(d.estimated_time_months)} с нуля</span></div></div></div>
+    <div class="panel"><h4>Порядок изучения — от основ к продвинутому</h4><ol class="route">${d.stack.map((s, i) => `<li><span>${i + 1}</span>${esc(s)}</li>`).join("")}</ol></div>
+    <div class="panel"><h4>Советы по обучению</h4><ul class="adv">${d.learning_advice.map(a => `<li>${esc(a)}</li>`).join("")}</ul></div>`,
+  quest: d => `
+    <div class="panel"><div class="head"><h2>${d.questions.length} вопросов</h2>${diff(d.difficulty)}</div></div>
+    <div class="panel" style="display:grid;gap:18px">${d.questions.map((q, i) => `<div class="q"><b>${i + 1}</b><div>${esc(q)}</div></div>`).join("")}</div>`,
+  vac: d => {
+    const r = d.results.response;
+    if (!r.items.length) return `<div class="panel"><b>Ничего не найдено.</b><p class="meta" style="margin:6px 0 0">Попробуйте изменить запрос, убрать регион или снизить порог зарплаты.</p></div>`;
+    const fmt = n => n.toLocaleString("ru-RU");
+    const sal = v => v.salary_min && v.salary_max ? `${fmt(v.salary_min)} – ${fmt(v.salary_max)} ₽` : v.salary_min ? `от ${fmt(v.salary_min)} ₽` : v.salary_max ? `до ${fmt(v.salary_max)} ₽` : "Зарплата не указана";
+    return `<div class="meta">Найдено: ${fmt(r.total)}. Показано: ${r.items.length}</div>` + r.items.map(v => `
+      <article class="panel vac"><div><h3>${esc(v.name)}</h3><div class="co">${esc([v.company_name, v.region_name].filter(Boolean).join(", "))}</div></div>
+      <div class="sal">${sal(v)}</div>
+      <div class="meta">${v.created_at ? "Опубликовано " + esc(v.created_at) : ""}</div>
+      ${/^https?:\/\//.test(v.url || "") ? `<a href="${esc(v.url)}" target="_blank" rel="noopener noreferrer">Открыть вакансию</a>` : "<span></span>"}</article>`).join("");
+  },
+};
+
+document.querySelectorAll("form[data-form]").forEach(f => {
+  f.onsubmit = async e => {
+    e.preventDefault();
+    const k = f.dataset.form, out = $("#o-" + k), btn = $(".btn", f), label = btn.textContent;
+    const body = Object.fromEntries(new FormData(f));
+    if (k === "vac") {
+      body.limit = +body.limit;
+      ["region_code", "salary_min"].forEach(x => { if (!body[x]) delete body[x]; });
+      if (body.salary_min) body.salary_min = +body.salary_min;
+    }
+    btn.disabled = true; btn.innerHTML = `<span class="spin"></span>${k === "vac" ? "Ищем" : "Думаем"}…`; out.innerHTML = "";
+    try {
+      const d = await api({ stack: API.stack, quest: API.questions, vac: API.vacancies }[k], body);
+      out.innerHTML = render[k](k === "vac" ? d : d.results.response);
+    } catch (err) { out.innerHTML = `<div class="err" role="alert">${esc(err.message)}</div>`; }
+    btn.disabled = false; btn.textContent = label;
+  };
+});
+
+// ─── Старт ───
+const saved = localStorage.getItem("dn_user");
+saved ? showApp(saved) : showAuth();
+</script>
+</body>
+</html>

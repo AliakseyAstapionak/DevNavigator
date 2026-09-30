@@ -9,8 +9,7 @@ from services.utils import close_client
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-
-    async with engine.connect() as conn:
+    async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     print('Приложение запущено!')
     yield
@@ -28,4 +27,4 @@ app.include_router(write_questions_by_stack_router)
 
 
 if __name__ == '__main__':
-    uvicorn.run('main:app', port=8000, reload=False, workers=4)
+    uvicorn.run('main:app', port=8000, reload=False, workers=1)
